@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const pdfParser = require("pdf-parse");
 const fs = require("fs");
+const { totalmem } = require("os");
 
 const app = express();
 const upload = multer({ dest: "uploads/" }); // configure multer to store uploaded files in the "uploads" directory
@@ -15,7 +16,23 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   const dataBuffer = fs.readFileSync(req.file.path); // read the file as a buffer
   const pdfData = await pdfParser(dataBuffer); // parse the pdf data
   const text = pdfData.text; // extract the text from the pdf
-  res.send(text); // send the text back to the client
+
+  //todo: going to split text into chunks
+  // split the text into chunks of 500 characters each
+  /* This is not optimized as it may not handle large files efficiently coz it reads the entire file into memory before processing*/
+  /*
+  const chunks = [];
+  for (let i = 0; i <= text.length; i += 500) {
+    chunks.push(text.slice(i, i + 500));
+  }
+  */
+
+  //Alternative method:optimized
+  const chunks = text.split("\n\n");
+  res.json({
+    totalChunks: chunks.length,
+    chunks,
+  }); // send the text back to the client
 });
 
 app.listen(3000, () => {
