@@ -2,7 +2,6 @@ const express = require("express");
 const multer = require("multer");
 const pdfParser = require("pdf-parse");
 const fs = require("fs");
-const { totalmem } = require("os");
 
 const app = express();
 const upload = multer({ dest: "uploads/" }); // configure multer to store uploaded files in the "uploads" directory
